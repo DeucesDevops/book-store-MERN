@@ -62,34 +62,36 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-//Route for Updating a Book
+// Route for Updating a Book
 router.put('/:id', async (req, res) => {
     try {
-        if (!req.body.title ||
-        !req.body.author ||
-        !req.body.publishYear) 
-        {
+        const { id } = req.params;
+
+        if (!req.body.title || !req.body.author || !req.body.publishYear) {
             return res.status(400).send({
                 message: 'Send all required fields: title, author, publishYear',
             });
         }
 
-        const { id } = req.params;
+        const updatedBookData = {
+            title: req.body.title,
+            author: req.body.author,
+            publishYear: req.body.publishYear,
+        };
 
-        const result = await Book.findByIdAndUpdate(id);
+        const result = await Book.findByIdAndUpdate(id, updatedBookData, { new: true });
 
         if (!result) {
             return res.status(404).json({ message: 'Book not found' });
         }
 
-        return res.status(200).send({ message: 'Book updated successfully' })
-
-
+        return res.status(200).send({ message: 'Book updated successfully' });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send({ message: error.message })
+        res.status(500).send({ message: error.message });
     }
 });
+
 
 //Route for Delete a book
 router.delete('/:id', async (req, res) => {
